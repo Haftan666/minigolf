@@ -138,8 +138,8 @@ Rigidbody:
   m_GameObject: {fileID: 534063382}
   serializedVersion: 4
   m_Mass: 0.5
-  m_Drag: 0.1
-  m_AngularDrag: 0.1
+  m_Drag: 0.05
+  m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -269,6 +269,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1004305233559266065, guid: 2fbb6c85cd0b18a409dfae33e4319200, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1916924662}
+    - targetCorrespondingSourceObject: {fileID: 1004305233559266065, guid: 2fbb6c85cd0b18a409dfae33e4319200, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 963194228}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 2099316281507514234, guid: 2fbb6c85cd0b18a409dfae33e4319200, type: 3}
       insertIndex: -1
@@ -606,6 +609,7 @@ GameObject:
   - component: {fileID: 963194228}
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
+  - component: {fileID: 963194229}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -680,13 +684,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.008511711, y: -0.83400023, z: -0.55166984, w: 0.005616653}
-  m_LocalPosition: {x: 0, y: -1.806214, z: 0.04596975}
-  m_LocalScale: {x: 0.0025010095, y: 0.036271118, z: 0.067375645}
+  m_LocalRotation: {x: -0.19963776, y: -0.009990263, z: 0.0020471152, w: -0.97981673}
+  m_LocalPosition: {x: 0, y: 0.191, z: -0.213}
+  m_LocalScale: {x: 0.14236864, y: 0.1423686, z: 0.14236854}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1275262788}
+  m_Father: {fileID: 534063387}
   m_LocalEulerAnglesHint: {x: 13.516, y: 0, z: 0}
+--- !u!114 &963194229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cba648d0c2b737479b504be8245eedc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1047303113
 GameObject:
   m_ObjectHideFlags: 0
@@ -1289,9 +1305,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9762210d0ce0c2c44a97787ebefaec0b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1693081027}
-    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9762210d0ce0c2c44a97787ebefaec0b, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 963194228}
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9762210d0ce0c2c44a97787ebefaec0b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1319622658}

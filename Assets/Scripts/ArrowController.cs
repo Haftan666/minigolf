@@ -44,7 +44,7 @@ public class ArrowController : MonoBehaviour
 
         currentArrowScale = Mathf.Min(direction.magnitude * arrowScaleFactor, maxArrowScale);
 
-        transform.localScale = new Vector3(1.2f, 0.5f, currentArrowScale);
+        transform.localScale = new Vector3(1.7f, 0.1f, currentArrowScale);
 
         if (direction != Vector3.zero)
         {
