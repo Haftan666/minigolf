@@ -1,14 +1,10 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class BallController : MonoBehaviour
 {
-    public GameObject arrow; 
     public float maxForce;
-    public float arrowScaleFactor;
-    public float maxArrowScale;
-    public float resetTime;
     public float speedThreshold;
+    public GameObject levelPassedTrigger;
 
     private Vector3 initialMousePosition;
     private Vector3 currentMousePosition;
@@ -16,13 +12,14 @@ public class BallController : MonoBehaviour
     private bool hasAppliedForce = false;
     private Rigidbody rb;
     private float timeSinceLastMove;
-    private float currentArrowScale;
+    private float timeMovingAway = 0f; // Czas, przez który piłka się oddala
+
+    public ArrowController arrowController;
+    public GameManager levelManager;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        arrow.SetActive(false);
-        arrow.transform.localPosition = Vector3.zero;
     }
 
     void Update()
@@ -31,62 +28,37 @@ public class BallController : MonoBehaviour
         {
             initialMousePosition = Input.mousePosition;
             isDragging = true;
-            arrow.SetActive(true);
-            arrow.transform.localPosition = Vector3.zero;
+            arrowController.ShowArrow();
         }
 
         if (isDragging && Input.GetMouseButton(0))
         {
             currentMousePosition = Input.mousePosition;
-            UpdateArrow();
+            arrowController.UpdateArrow(initialMousePosition, currentMousePosition, maxForce);
         }
 
-        if (Input.GetMouseButtonUp(0) && isDragging) 
+        if (Input.GetMouseButtonUp(0) && isDragging)
         {
             isDragging = false;
-            arrow.SetActive(false);
+            arrowController.HideArrow();
             ApplyForce();
-            hasAppliedForce = true; 
+            hasAppliedForce = true;
         }
 
         if (hasAppliedForce)
         {
             CheckBallMovement();
+            CheckDirectionToTrigger();
         }
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            ResetLevel();
+            levelManager.ResetLevel();
         }
-    }
-
-    void UpdateArrow()
-    {
-       
-        Vector3 direction = initialMousePosition - currentMousePosition;
-        direction.z = direction.y;
-        direction.y = 0; 
-        
-        float angle = Vector3.SignedAngle(Vector3.forward, direction, Vector3.up);
-        if (angle < -60f || angle > 60f)
-        {
-            float clampedAngle = Mathf.Clamp(angle, -60f, 60f);
-            direction = Quaternion.Euler(0, clampedAngle - angle, 0) * direction;
-        }
-
-        float forceMagnitude = Mathf.Clamp(direction.magnitude, 0, maxForce);
-
-        
-        currentArrowScale = Mathf.Min(direction.magnitude * arrowScaleFactor, maxArrowScale);
-
-        
-        arrow.transform.localScale = new Vector3(1.2f, 0.5f, currentArrowScale);
-        arrow.transform.rotation = Quaternion.LookRotation(direction);
     }
 
     void ApplyForce()
     {
-
         Vector3 direction = initialMousePosition - currentMousePosition;
         direction.z = direction.y;
         direction.y = 0;
@@ -100,8 +72,7 @@ public class BallController : MonoBehaviour
 
         direction.Normalize();
 
-
-        float forceMagnitude = Mathf.Clamp(currentArrowScale, 0, maxForce);
+        float forceMagnitude = Mathf.Clamp(arrowController.GetCurrentArrowScale(), 0, maxForce);
 
         rb.AddForce(direction * forceMagnitude, ForceMode.Impulse);
     }
@@ -111,9 +82,9 @@ public class BallController : MonoBehaviour
         if (rb.linearVelocity.magnitude < speedThreshold)
         {
             timeSinceLastMove += Time.deltaTime;
-            if (timeSinceLastMove >= resetTime)
+            if (timeSinceLastMove >= levelManager.resetTime)
             {
-                ResetLevel();
+                levelManager.ResetLevel();
             }
         }
         else
@@ -122,16 +93,37 @@ public class BallController : MonoBehaviour
         }
     }
 
+    void CheckDirectionToTrigger()
+    {
+        if (levelPassedTrigger != null)
+        {
+            Vector3 directionToTrigger = levelPassedTrigger.transform.position - transform.position;
+            float dotProduct = Vector3.Dot(rb.linearVelocity.normalized, directionToTrigger.normalized);
+
+            if (dotProduct < 0) // Piłka oddala się od obiektu
+            {
+                timeMovingAway += Time.deltaTime;
+                if (timeMovingAway >= 1.5f)
+                {
+                    levelManager.ResetLevel();
+                }
+            }
+            else
+            {
+                timeMovingAway = 0f; // Zresetuj licznik, jeśli piłka zmierza w kierunku obiektu
+            }
+        }
+    }
+
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("RetryTrigger"))
         {
-            Invoke("ResetLevel", 1.5f);
+            levelManager.InvokeResetLevel(1.5f);
         }
-    }
-
-    void ResetLevel()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        else if (other.CompareTag("LevelPassedTrigger"))
+        {
+            levelManager.InvokeResetLevel(1.5f);
+        }
     }
 }
