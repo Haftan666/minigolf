@@ -171,6 +171,8 @@ MonoBehaviour:
   maxForce: 12
   speedThreshold: 0.5
   levelPassedTrigger: {fileID: 918939019}
+  arrowController: {fileID: 1916924665}
+  levelManager: {fileID: 2044888008}
 --- !u!135 &534063394
 SphereCollider:
   m_ObjectHideFlags: 0
