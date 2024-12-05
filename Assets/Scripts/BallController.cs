@@ -4,18 +4,16 @@ public class BallController : MonoBehaviour
 {
     public float maxForce;
     public float speedThreshold;
-    public GameObject levelPassedTrigger;
 
     private Vector3 initialMousePosition;
     private Vector3 currentMousePosition;
     private bool isDragging = false;
-    private bool hasAppliedForce = false;
     private Rigidbody rb;
     private float timeSinceLastMove;
     private float timeMovingAway = 0f; // Czas, przez który piłka się oddala
 
     public ArrowController arrowController;
-    public GameManager levelManager;
+    public GameManager gameManager;
 
     void Start()
     {
@@ -24,7 +22,7 @@ public class BallController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && !hasAppliedForce)
+        if (Input.GetMouseButtonDown(0) && !gameManager.GetHasAppliedForce())
         {
             initialMousePosition = Input.mousePosition;
             isDragging = true;
@@ -42,10 +40,11 @@ public class BallController : MonoBehaviour
             isDragging = false;
             arrowController.HideArrow();
             ApplyForce();
-            hasAppliedForce = true;
+            //Debug.Log("force applied");
+            gameManager.SetHasAppliedForce(true);
         }
 
-        if (hasAppliedForce)
+        if (gameManager.GetHasAppliedForce())
         {
             CheckBallMovement();
             CheckDirectionToTrigger();
@@ -53,7 +52,7 @@ public class BallController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            levelManager.ResetLevel();
+            gameManager.ResetLevel();
         }
     }
 
@@ -82,9 +81,10 @@ public class BallController : MonoBehaviour
         if (rb.linearVelocity.magnitude < speedThreshold)
         {
             timeSinceLastMove += Time.deltaTime;
-            if (timeSinceLastMove >= levelManager.resetTime)
+            if (timeSinceLastMove >= gameManager.resetTime)
             {
-                levelManager.ResetLevel();
+                //Debug.Log("Resetting level");
+                gameManager.ResetLevel();
             }
         }
         else
@@ -93,8 +93,10 @@ public class BallController : MonoBehaviour
         }
     }
 
+
     void CheckDirectionToTrigger()
     {
+        GameObject levelPassedTrigger = gameManager.GetCurrentLevelPassedTrigger();
         if (levelPassedTrigger != null)
         {
             Vector3 directionToTrigger = levelPassedTrigger.transform.position - transform.position;
@@ -103,9 +105,9 @@ public class BallController : MonoBehaviour
             if (dotProduct < 0) // Piłka oddala się od obiektu
             {
                 timeMovingAway += Time.deltaTime;
-                if (timeMovingAway >= 1.5f)
+                if (timeMovingAway >= gameManager.resetTime)
                 {
-                    levelManager.ResetLevel();
+                    gameManager.ResetLevel();
                 }
             }
             else
@@ -119,11 +121,16 @@ public class BallController : MonoBehaviour
     {
         if (other.CompareTag("RetryTrigger"))
         {
-            levelManager.InvokeResetLevel(1.5f);
+            gameManager.InvokeResetLevel(gameManager.resetTime);
         }
         else if (other.CompareTag("LevelPassedTrigger"))
         {
-            levelManager.InvokeResetLevel(1.5f);
+            gameManager.NextLevel();
         }
+    }
+
+    public void ResetTimeSinceLastMove()
+    {
+        timeSinceLastMove = 0f;
     }
 }
