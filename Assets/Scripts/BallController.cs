@@ -11,6 +11,7 @@ public class BallController : MonoBehaviour
     private Rigidbody rb;
     private float timeSinceLastMove;
     private float timeMovingAway = 0f; // Czas, przez który piłka się oddala
+    private bool retryTriggerHit = false;
 
     public ArrowController arrowController;
     public GameManager gameManager;
@@ -22,10 +23,15 @@ public class BallController : MonoBehaviour
 
     void Update()
     {
+        if (gameManager.getGameEnded())
+        {
+            return;
+        }
         if (Input.GetMouseButtonDown(0) && !gameManager.GetHasAppliedForce())
         {
             initialMousePosition = Input.mousePosition;
             isDragging = true;
+            retryTriggerHit = false; //temp fix
             arrowController.ShowArrow();
         }
 
@@ -44,7 +50,7 @@ public class BallController : MonoBehaviour
             gameManager.SetHasAppliedForce(true);
         }
 
-        if (gameManager.GetHasAppliedForce())
+        if (gameManager.GetHasAppliedForce() && !retryTriggerHit)
         {
             CheckBallMovement();
             CheckDirectionToTrigger();
@@ -122,6 +128,7 @@ public class BallController : MonoBehaviour
         if (other.CompareTag("RetryTrigger"))
         {
             gameManager.InvokeResetLevel(gameManager.resetTime);
+            retryTriggerHit = true; //temp fix
         }
         else if (other.CompareTag("LevelPassedTrigger"))
         {
