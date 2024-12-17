@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour
     {
         //Debug.Log($"Attempts: {attempts}, Total Attempts: {totalAttempts}");
         ballTransform.position = initialBallPosition + new Vector3(currentLevel * levelOffsetX, 0, 0);
+        ballTransform.rotation = Quaternion.identity;
         ballTransform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero; // Zresetuj prędkość piłki
         ballTransform.GetComponent<Rigidbody>().angularVelocity = Vector3.zero; // Zresetuj rotację piłki
         hasAppliedForce = false;

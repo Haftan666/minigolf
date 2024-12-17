@@ -19,6 +19,7 @@ public class BallController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        arrowController.ResetArrowState();
     }
 
     void Update()
@@ -45,7 +46,9 @@ public class BallController : MonoBehaviour
         {
             isDragging = false;
             arrowController.HideArrow();
+            arrowController.HideLastAttemptArrow();
             ApplyForce();
+            arrowController.SaveLastArrowState();
             //Debug.Log("force applied");
             gameManager.SetHasAppliedForce(true);
         }
@@ -133,6 +136,7 @@ public class BallController : MonoBehaviour
         else if (other.CompareTag("LevelPassedTrigger"))
         {
             gameManager.NextLevel();
+            arrowController.ResetArrowState();
         }
     }
 

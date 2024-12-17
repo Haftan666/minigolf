@@ -8,18 +8,42 @@ public class ArrowController : MonoBehaviour
     private float currentArrowScale;
     private Renderer arrowRenderer;
 
+    private Vector3 lastArrowPosition;
+    private Vector3 lastArrowScale;
+    private Color lastArrowColor;
+    private Quaternion lastArrowRotation;
+    private bool hasPreviousAttempt = false;
+    private GameObject lastAttemptArrow;
+    private Renderer lastAttemptArrowRenderer;
+
     void Start()
     {
         gameObject.SetActive(false);
         transform.localPosition = Vector3.zero;
         arrowRenderer = GetComponent<Renderer>();
         arrowRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+
+        lastAttemptArrow = Instantiate(gameObject, transform.parent);
+        lastAttemptArrow.name = "LastAttemptArrow";
+        lastAttemptArrowRenderer = lastAttemptArrow.GetComponent<Renderer>();
+        lastAttemptArrowRenderer.material = new Material(arrowRenderer.material);
+        lastAttemptArrow.SetActive(false);
     }
 
     public void ShowArrow()
     {
         gameObject.SetActive(true);
         transform.localPosition = Vector3.zero;
+
+        // Pokaż wyblakłą strzałkę, jeśli była poprzednia próba
+        if (hasPreviousAttempt)
+        {
+            lastAttemptArrow.SetActive(true);
+            lastAttemptArrow.transform.localPosition = lastArrowPosition;
+            lastAttemptArrow.transform.localScale = lastArrowScale;
+            lastAttemptArrow.transform.rotation = lastArrowRotation;
+            lastAttemptArrowRenderer.material.color = MakeColorFaded(lastArrowColor);
+        }
     }
 
     public void HideArrow()
@@ -81,8 +105,40 @@ public class ArrowController : MonoBehaviour
         arrowRenderer.material.color = color;
     }
 
+    private Color MakeColorFaded(Color color)
+    {
+        // Zmniejsz nasycenie koloru i zwiększ przezroczystość
+        Color.RGBToHSV(color, out float h, out float s, out float v);
+        s *= 0.3f; // Zmniejsz nasycenie o połowę
+        Color fadedColor = Color.HSVToRGB(h, s, v);
+        fadedColor.a = 0.2f; // Ustaw przezroczystość na 0.3f
+        return fadedColor;
+    }
+
     public float GetCurrentArrowScale()
     {
         return currentArrowScale;
+    }
+    public void HideLastAttemptArrow()
+    {
+        if (lastAttemptArrow != null)
+        {
+            lastAttemptArrow.SetActive(false);
+        }
+    }
+
+    public void SaveLastArrowState()
+    {
+        lastArrowPosition = transform.localPosition;
+        lastArrowScale = transform.localScale;
+        lastArrowColor = arrowRenderer.material.color;
+        lastArrowRotation = transform.rotation;
+        hasPreviousAttempt = true;
+    }
+
+    public void ResetArrowState()
+    {
+        hasPreviousAttempt = false;
+        HideLastAttemptArrow();
     }
 }
