@@ -8,11 +8,16 @@ public class LastAttemptArrowController : MonoBehaviour
     private Quaternion lastArrowRotation;
     private Renderer arrowRenderer;
 
-    void Start()
+    void Awake()
     {
         arrowRenderer = GetComponent<Renderer>();
+    }
+
+    void Start()
+    {
         arrowRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
     }
+
 
     public void ShowLastAttemptArrow()
     {

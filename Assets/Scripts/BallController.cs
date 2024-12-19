@@ -35,10 +35,13 @@ public class BallController : MonoBehaviour
             isDragging = true;
             retryTriggerHit = false;
             arrowController.ShowArrow();
-            if (gameManager.GetAttempts() >= 2)
+            lastAttemptArrowController.ShowLastAttemptArrow();
+            if(gameManager.GetAttempts() == 0)
             {
-                lastAttemptArrowController.ShowLastAttemptArrow();
+
+               lastAttemptArrowController.HideLastAttemptArrow();
             }
+            
             Debug.Log("Mouse button down, arrow shown");
         }
 
@@ -72,7 +75,7 @@ public class BallController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            gameManager.ResetLevel();
+            gameManager.ResetLevel(false);
             Debug.Log("Reset level key pressed");
         }
     }
@@ -104,7 +107,7 @@ public class BallController : MonoBehaviour
             timeSinceLastMove += Time.deltaTime;
             if (timeSinceLastMove >= gameManager.resetTime)
             {
-                gameManager.ResetLevel();
+                gameManager.ResetLevel(false);
             }
         }
         else
@@ -126,7 +129,7 @@ public class BallController : MonoBehaviour
                 timeMovingAway += Time.deltaTime;
                 if (timeMovingAway >= gameManager.resetTime)
                 {
-                    gameManager.ResetLevel();
+                    gameManager.ResetLevel(false);
                 }
             }
             else
@@ -140,7 +143,7 @@ public class BallController : MonoBehaviour
     {
         if (other.CompareTag("RetryTrigger"))
         {
-            gameManager.InvokeResetLevel(gameManager.resetTime);
+            gameManager.InvokeResetLevel(gameManager.resetTime, false);
             retryTriggerHit = true;
             Debug.Log("RetryTrigger hit");
         }
