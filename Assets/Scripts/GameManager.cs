@@ -45,6 +45,11 @@ public class GameManager : MonoBehaviour
     public void NextLevel()
     {
         totalAttempts += attempts;
+        if (totalAttempts > PlayerPrefs.GetInt("HighScore", 0))
+        {
+            PlayerPrefs.SetInt("HighScore", totalAttempts);
+            PlayerPrefs.Save();
+        }
         attempts = 0;
 
         int nextLevel = currentLevel + 1;
