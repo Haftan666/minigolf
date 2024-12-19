@@ -11,8 +11,9 @@ public class MainMenu : MonoBehaviour
     private void Start()
     {
         // Załaduj rekord z PlayerPrefs
-        record = PlayerPrefs.GetInt("HighScore", 0);
-        recordText.text = "Your highscore: " + record;
+        record = PlayerPrefs.GetInt("Highscore", 0);
+        recordText.text = "Your highscore: " + (record == 0 ? "not set" : record.ToString());
+
     }
 
     public void StartGame()

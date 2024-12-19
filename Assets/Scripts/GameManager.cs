@@ -1,6 +1,7 @@
 ﻿using TMPro;
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -49,11 +50,6 @@ public class GameManager : MonoBehaviour
     public void NextLevel()
     {
         totalAttempts += attempts + 1;
-        if (totalAttempts > PlayerPrefs.GetInt("HighScore", 0))
-        {
-            PlayerPrefs.SetInt("HighScore", totalAttempts);
-            PlayerPrefs.Save();
-        }
         attempts = 0;
 
         int nextLevel = currentLevel + 1;
@@ -116,6 +112,11 @@ public class GameManager : MonoBehaviour
     {
         totalAttempts += attempts;
         totalAttemptsText.text = $"Total Attempts: {totalAttempts}";
+        if (totalAttempts < PlayerPrefs.GetInt("Highscore", 0) || PlayerPrefs.GetInt("Highscore", 0) == 0)
+        {
+            PlayerPrefs.SetInt("Highscore", totalAttempts);
+            PlayerPrefs.Save();
+        }
         StartCoroutine(FadeInPanel(congratulationsPanel, 2f));
     }
 
@@ -151,5 +152,18 @@ public class GameManager : MonoBehaviour
     public int GetAttempts()
     {
         return attempts;
+    }
+
+    public void MainMenu()
+    {
+        // Przejdź do menu
+        SceneManager.LoadScene(0);
+    }
+
+    public void ExitGame()
+    {
+        // Zamknij grę
+        Application.Quit();
+        Debug.Log("Gra została zamknięta (działa tylko w buildzie)");
     }
 }
