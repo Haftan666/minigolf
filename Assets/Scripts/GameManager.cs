@@ -1,6 +1,7 @@
 ﻿using TMPro;
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI levelText;
     public TextMeshProUGUI totalAttemptsText;
     public GameObject congratulationsPanel;
-    private int attempts = 1;
+    private int attempts = 0;
     private int totalAttempts = 0;
     private bool gameEnded = false;
 
@@ -30,7 +31,7 @@ public class GameManager : MonoBehaviour
         lastAttemptArrowController.HideLastAttemptArrow();
     }
 
-    public void ResetLevel()
+    public void ResetLevel(bool isNext)
     {
         ballTransform.position = initialBallPosition + new Vector3(currentLevel * levelOffsetX, 0, 0);
         ballTransform.rotation = Quaternion.identity;
@@ -38,13 +39,17 @@ public class GameManager : MonoBehaviour
         ballTransform.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         hasAppliedForce = false;
         ballController.ResetTimeSinceLastMove();
-        attempts++;
+        if(!isNext)
+        {
+            attempts++;
+        }
+ 
         UpdateAttemptsText();
     }
 
     public void NextLevel()
     {
-        totalAttempts += attempts;
+        totalAttempts += attempts + 1;
         attempts = 0;
 
         int nextLevel = currentLevel + 1;
@@ -52,7 +57,7 @@ public class GameManager : MonoBehaviour
         if (nextLevelObject != null)
         {
             currentLevel = nextLevel;
-            InvokeResetLevel(resetTime);
+            InvokeResetLevel(resetTime, true);
             Invoke("UpdateLevelText", resetTime);
         }
         else
@@ -62,9 +67,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void InvokeResetLevel(float delay)
+    public void InvokeResetLevel(float delay, bool isNext)
     {
-        Invoke("ResetLevel", delay);
+        // Używamy pomocniczej metody, która wywoła ResetLevel
+        StartCoroutine(InvokeWithDelay(delay, isNext));
+    }
+
+    private IEnumerator InvokeWithDelay(float delay, bool isNext)
+    {
+        yield return new WaitForSeconds(delay);
+        ResetLevel(isNext);
     }
 
     public void SetHasAppliedForce(bool value)
@@ -88,7 +100,7 @@ public class GameManager : MonoBehaviour
 
     private void UpdateAttemptsText()
     {
-        attemptsText.text = $"Attempt {attempts}";
+        attemptsText.text = $"Attempt {attempts +1}";
     }
 
     private void UpdateLevelText()
@@ -100,6 +112,11 @@ public class GameManager : MonoBehaviour
     {
         totalAttempts += attempts;
         totalAttemptsText.text = $"Total Attempts: {totalAttempts}";
+        if (totalAttempts < PlayerPrefs.GetInt("Highscore", 0) || PlayerPrefs.GetInt("Highscore", 0) == 0)
+        {
+            PlayerPrefs.SetInt("Highscore", totalAttempts);
+            PlayerPrefs.Save();
+        }
         StartCoroutine(FadeInPanel(congratulationsPanel, 2f));
     }
 
@@ -135,5 +152,18 @@ public class GameManager : MonoBehaviour
     public int GetAttempts()
     {
         return attempts;
+    }
+
+    public void MainMenu()
+    {
+        // Przejdź do menu
+        SceneManager.LoadScene(0);
+    }
+
+    public void ExitGame()
+    {
+        // Zamknij grę
+        Application.Quit();
+        Debug.Log("Gra została zamknięta (działa tylko w buildzie)");
     }
 }
