@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public float resetTime;
     public bool hasAppliedForce = false;
     public BallController ballController;
+    public LastAttemptArrowController lastAttemptArrowController;
     public TextMeshProUGUI attemptsText;
     public TextMeshProUGUI levelText;
     public TextMeshProUGUI totalAttemptsText;
@@ -22,19 +23,19 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        initialBallPosition = ballTransform.position; // Zapisz początkową pozycję piłki
+        initialBallPosition = ballTransform.position;
         UpdateAttemptsText();
         UpdateLevelText();
         congratulationsPanel.SetActive(false);
+        lastAttemptArrowController.HideLastAttemptArrow();
     }
 
     public void ResetLevel()
     {
-        //Debug.Log($"Attempts: {attempts}, Total Attempts: {totalAttempts}");
         ballTransform.position = initialBallPosition + new Vector3(currentLevel * levelOffsetX, 0, 0);
         ballTransform.rotation = Quaternion.identity;
-        ballTransform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero; // Zresetuj prędkość piłki
-        ballTransform.GetComponent<Rigidbody>().angularVelocity = Vector3.zero; // Zresetuj rotację piłki
+        ballTransform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+        ballTransform.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         hasAppliedForce = false;
         ballController.ResetTimeSinceLastMove();
         attempts++;
@@ -65,6 +66,7 @@ public class GameManager : MonoBehaviour
     {
         Invoke("ResetLevel", delay);
     }
+
     public void SetHasAppliedForce(bool value)
     {
         hasAppliedForce = value;
@@ -128,5 +130,10 @@ public class GameManager : MonoBehaviour
     public bool getGameEnded()
     {
         return gameEnded;
+    }
+
+    public int GetAttempts()
+    {
+        return attempts;
     }
 }

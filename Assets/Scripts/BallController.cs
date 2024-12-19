@@ -10,16 +10,17 @@ public class BallController : MonoBehaviour
     private bool isDragging = false;
     private Rigidbody rb;
     private float timeSinceLastMove;
-    private float timeMovingAway = 0f; // Czas, przez który piłka się oddala
+    private float timeMovingAway = 0f;
     private bool retryTriggerHit = false;
 
     public ArrowController arrowController;
+    public LastAttemptArrowController lastAttemptArrowController;
     public GameManager gameManager;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        arrowController.ResetArrowState();
+        lastAttemptArrowController.HideLastAttemptArrow();
     }
 
     void Update()
@@ -32,8 +33,13 @@ public class BallController : MonoBehaviour
         {
             initialMousePosition = Input.mousePosition;
             isDragging = true;
-            retryTriggerHit = false; //temp fix
+            retryTriggerHit = false;
             arrowController.ShowArrow();
+            if (gameManager.GetAttempts() >= 2)
+            {
+                lastAttemptArrowController.ShowLastAttemptArrow();
+            }
+            Debug.Log("Mouse button down, arrow shown");
         }
 
         if (isDragging && Input.GetMouseButton(0))
@@ -46,11 +52,16 @@ public class BallController : MonoBehaviour
         {
             isDragging = false;
             arrowController.HideArrow();
-            arrowController.HideLastAttemptArrow();
+            lastAttemptArrowController.SaveLastArrowState(
+                arrowController.transform.localPosition,
+                arrowController.transform.localScale,
+                arrowController.GetComponent<Renderer>().material.color,
+                arrowController.transform.rotation
+            );
+            lastAttemptArrowController.HideLastAttemptArrow();
             ApplyForce();
-            arrowController.SaveLastArrowState();
-            //Debug.Log("force applied");
             gameManager.SetHasAppliedForce(true);
+            Debug.Log("Mouse button up, force applied");
         }
 
         if (gameManager.GetHasAppliedForce() && !retryTriggerHit)
@@ -62,6 +73,7 @@ public class BallController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R))
         {
             gameManager.ResetLevel();
+            Debug.Log("Reset level key pressed");
         }
     }
 
@@ -92,7 +104,6 @@ public class BallController : MonoBehaviour
             timeSinceLastMove += Time.deltaTime;
             if (timeSinceLastMove >= gameManager.resetTime)
             {
-                //Debug.Log("Resetting level");
                 gameManager.ResetLevel();
             }
         }
@@ -102,7 +113,6 @@ public class BallController : MonoBehaviour
         }
     }
 
-
     void CheckDirectionToTrigger()
     {
         GameObject levelPassedTrigger = gameManager.GetCurrentLevelPassedTrigger();
@@ -111,7 +121,7 @@ public class BallController : MonoBehaviour
             Vector3 directionToTrigger = levelPassedTrigger.transform.position - transform.position;
             float dotProduct = Vector3.Dot(rb.linearVelocity.normalized, directionToTrigger.normalized);
 
-            if (dotProduct < 0) // Piłka oddala się od obiektu
+            if (dotProduct < 0)
             {
                 timeMovingAway += Time.deltaTime;
                 if (timeMovingAway >= gameManager.resetTime)
@@ -121,7 +131,7 @@ public class BallController : MonoBehaviour
             }
             else
             {
-                timeMovingAway = 0f; // Zresetuj licznik, jeśli piłka zmierza w kierunku obiektu
+                timeMovingAway = 0f;
             }
         }
     }
@@ -131,12 +141,14 @@ public class BallController : MonoBehaviour
         if (other.CompareTag("RetryTrigger"))
         {
             gameManager.InvokeResetLevel(gameManager.resetTime);
-            retryTriggerHit = true; //temp fix
+            retryTriggerHit = true;
+            Debug.Log("RetryTrigger hit");
         }
         else if (other.CompareTag("LevelPassedTrigger"))
         {
             gameManager.NextLevel();
-            arrowController.ResetArrowState();
+            lastAttemptArrowController.HideLastAttemptArrow();
+            Debug.Log("LevelPassedTrigger hit");
         }
     }
 
