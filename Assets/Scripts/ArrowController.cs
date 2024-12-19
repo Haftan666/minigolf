@@ -59,23 +59,23 @@ public class ArrowController : MonoBehaviour
         Color color;
         if (t < 0.2f)
         {
-            color = Color.Lerp(new Color(0.8f, 1f, 0.8f), Color.green, t * 5); // Bardzo jasny zielony do zielonego
+            color = Color.Lerp(new Color(0.8f, 1f, 0.8f), Color.green, t * 5);
         }
         else if (t < 0.4f)
         {
-            color = Color.Lerp(Color.green, new Color(1f, 1f, 0f), (t - 0.2f) * 5); // Zielony do żółtego
+            color = Color.Lerp(Color.green, new Color(1f, 1f, 0f), (t - 0.2f) * 5);
         }
         else if (t < 0.6f)
         {
-            color = Color.Lerp(new Color(1f, 1f, 0f), new Color(1f, 0.5f, 0f), (t - 0.4f) * 5); // Żółty do pomarańczowego
+            color = Color.Lerp(new Color(1f, 1f, 0f), new Color(1f, 0.5f, 0f), (t - 0.4f) * 5);
         }
         else if (t < 0.8f)
         {
-            color = Color.Lerp(new Color(1f, 0.5f, 0f), new Color(1f, 0.25f, 0f), (t - 0.6f) * 5); // Pomarańczowy do ciemnopomarańczowego
+            color = Color.Lerp(new Color(1f, 0.5f, 0f), new Color(1f, 0.25f, 0f), (t - 0.6f) * 5);
         }
         else
         {
-            color = Color.Lerp(new Color(1f, 0.25f, 0f), Color.red, (t - 0.8f) * 5); // Ciemnopomarańczowy do czerwonego
+            color = Color.Lerp(new Color(1f, 0.25f, 0f), Color.red, (t - 0.8f) * 5);
         }
 
         arrowRenderer.material.color = color;
