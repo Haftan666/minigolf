@@ -21,6 +21,8 @@ public class GameManager : MonoBehaviour
     private int attempts = 0;
     private int totalAttempts = 0;
     private bool gameEnded = false;
+    public GameObject backgroundMusic;
+    public GameObject congratulationsMusic;
 
     void Start()
     {
@@ -110,6 +112,10 @@ public class GameManager : MonoBehaviour
 
     private void ShowCongratulations()
     {
+        backgroundMusic.SetActive(false);
+        congratulationsMusic.SetActive(true);
+        congratulationsMusic.GetComponent<AudioSource>().loop = false;
+        congratulationsMusic.GetComponent<AudioSource>().Play();
         totalAttempts += attempts;
         totalAttemptsText.text = $"Total Attempts: {totalAttempts}";
         if (totalAttempts < PlayerPrefs.GetInt("Highscore", 0) || PlayerPrefs.GetInt("Highscore", 0) == 0)

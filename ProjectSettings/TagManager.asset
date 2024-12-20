@@ -6,6 +6,7 @@ TagManager:
   tags:
   - RetryTrigger
   - LevelPassedTrigger
+  - WoodHitTrigger
   layers:
   - Default
   - TransparentFX

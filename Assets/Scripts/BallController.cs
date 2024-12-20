@@ -17,6 +17,10 @@ public class BallController : MonoBehaviour
     public LastAttemptArrowController lastAttemptArrowController;
     public GameManager gameManager;
 
+    public AudioSource ballApplyForceSound;
+    public AudioSource ballWoodHitSound;
+
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -36,7 +40,7 @@ public class BallController : MonoBehaviour
             retryTriggerHit = false;
             arrowController.ShowArrow();
             lastAttemptArrowController.ShowLastAttemptArrow();
-            if(gameManager.GetAttempts() == 0)
+            if(gameManager.GetAttempts() < 2)
             {
 
                lastAttemptArrowController.HideLastAttemptArrow();
@@ -97,6 +101,7 @@ public class BallController : MonoBehaviour
 
         float forceMagnitude = Mathf.Clamp(arrowController.GetCurrentArrowScale(), 0, maxForce);
 
+        ballApplyForceSound.Play();
         rb.AddForce(direction * forceMagnitude, ForceMode.Impulse);
     }
 
@@ -152,6 +157,10 @@ public class BallController : MonoBehaviour
             gameManager.NextLevel();
             lastAttemptArrowController.HideLastAttemptArrow();
             Debug.Log("LevelPassedTrigger hit");
+        }
+        else if (other.CompareTag("WoodHitTrigger"))
+        {
+            ballWoodHitSound.Play();
         }
     }
 
